@@ -102,7 +102,7 @@ func GetDriver(name, home string, options []string) (Driver, error) {
 	if initFunc, exists := drivers[name]; exists {
 		return initFunc(filepath.Join(home, name), options)
 	}
-	logrus.Errorf("Failed to GetDriver graph %s %s", name, home)
+	logrus.Errorf("Failed to GetDriver graph %s %s %v", name, home, drivers)
 	return nil, ErrNotSupported
 }
 
@@ -158,6 +158,7 @@ func New(root string, options []string) (driver Driver, err error) {
 	// Check all registered drivers if no priority driver is found
 	for _, initFunc := range drivers {
 		if driver, err = initFunc(root, options); err != nil {
+			panic(fmt.Sprintf("root=%v, options=%v, driver=%v, err=%v", root, options, driver, err))
 			if err == ErrNotSupported || err == ErrPrerequisites || err == ErrIncompatibleFS {
 				continue
 			}
